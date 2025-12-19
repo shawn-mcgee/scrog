@@ -1,4 +1,5 @@
 import type { Color } from "./color";
+import type { Island } from "./island";
 import { Where } from "./where";
 
 
