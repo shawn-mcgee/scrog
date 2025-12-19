@@ -5,12 +5,13 @@ import type { Tile  } from "./tile"
 import type { Where } from "./where"
 
 export type Island = {
-  readonly tiles : {[tileId : string]: Tile }
-  readonly things: {[thingId: string]: Thing}
-  readonly scrogs: {[scrogId: string]: Scrog}
-  readonly sounds: {[soundId: string]: Sound}
+  tiles : {[tileId : string]: Tile }
+  things: {[thingId: string]: Thing}
+  scrogs: {[scrogId: string]: Scrog}
+  sounds: {[soundId: string]: Sound}
 
-  readonly grid: Array<string | undefined>
+  grid: Array<string | undefined>
+
   readonly w   : number
   readonly h   : number
 }
@@ -24,27 +25,27 @@ export const Island = {
   },
 
   addTile(iz: Island, tile: Tile) {
-    if (!_assertTileWithIdDoesNotExist(iz, tile.id)) return;
+    if (!_checkTileWithIdDoesNotExist(iz, tile.id)) return;
     iz.tiles[tile.id] = tile;
   },
 
   addThing(iz: Island, thing: Thing) {
-    if (!_assertThingWithIdDoesNotExist(iz, thing.id)) return;
+    if (!_checkThingWithIdDoesNotExist(iz, thing.id)) return;
     iz.things[thing.id] = thing;
   },
 
   addScrog(iz: Island, scrog: Scrog) {
-    if (!_assertScrogWithIdDoesNotExist(iz, scrog.id)) return;
+    if (!_checkScrogWithIdDoesNotExist(iz, scrog.id)) return;
     iz.scrogs[scrog.id] = scrog;
   },
 
   addSound(iz: Island, sound: Sound) {
-    if (!_assertSoundWithIdDoesNotExist(iz, sound.id)) return;
+    if (!_checkSoundWithIdDoesNotExist(iz, sound.id)) return;
     iz.sounds[sound.id] = sound;
   },
 
   removeTile(iz: Island, id: string) {
-    if (!_assertTileWithIdExists(iz, id)) return;
+    if (!_checkTileWithIdExists(iz, id)) return;
     delete iz.tiles[id];
 
     while (id in iz.grid)
@@ -52,7 +53,7 @@ export const Island = {
   },
 
   removeThing(iz: Island, id: string) {
-    if (!_assertThingWithIdExists(iz, id)) return;
+    if (!_checkThingWithIdExists(iz, id)) return;
     delete iz.things[id];
 
     for (const tile of Object.values(iz.tiles))
@@ -61,7 +62,7 @@ export const Island = {
   },
 
   removeScrog(iz: Island, id: string) {
-    if (!_assertScrogWithIdExists(iz, id)) return;
+    if (!_checkScrogWithIdExists(iz, id)) return;
     delete iz.scrogs[id];
 
     for (const tile of Object.values(iz.tiles))
@@ -70,7 +71,7 @@ export const Island = {
   },
 
   removeSound(iz: Island, id: string) {
-    if (!_assertSoundWithIdExists(iz, id)) return;
+    if (!_checkSoundWithIdExists(iz, id)) return;
     delete iz.sounds[id];
 
     for (const tile of Object.values(iz.tiles))
@@ -79,31 +80,31 @@ export const Island = {
   },
 
   getTileWithId(iz: Island, id: string) {
-    if (!_assertTileWithIdExists(iz, id)) return;
+    if (!_checkTileWithIdExists(iz, id)) return;
     return iz.tiles[id];
   },
 
   getThingWithId(iz: Island, id: string) {
-    if (!_assertThingWithIdExists(iz, id)) return;
+    if (!_checkThingWithIdExists(iz, id)) return;
     return iz.things[id];
   },
 
   getScrogWithId(iz: Island, id: string) {
-    if (!_assertScrogWithIdExists(iz, id)) return;
+    if (!_checkScrogWithIdExists(iz, id)) return;
     return iz.scrogs[id];
   },
 
   getSoundWithId(iz: Island, id: string) {
-    if (!_assertSoundWithIdExists(iz, id)) return;
+    if (!_checkSoundWithIdExists(iz, id)) return;
     return iz.sounds[id];
   },
 
   getTileAt(iz: Island, where: Where) {
     const at = _at(iz, where);
-    if (!_assertInBounds(iz, where)) return;
+    if (!_checkInBounds(iz, where)) return;
     const id = iz.grid[at];
     if (!                            id ) return;
-    if (!_assertTileWithIdExists(iz, id)) return;
+    if (!_checkTileWithIdExists(iz, id)) return;
     return iz.tiles[id];
   },
 
@@ -130,45 +131,45 @@ export const Island = {
 
   putTileAt(iz: Island, id: string | undefined, where: Where) {
     const at = _at(iz, where);
-    if (      !_assertInBounds        (iz, where)) return;
-    if (      !_assertGridIsEmptyAt   (iz, at   )) return;
-    if (id && !_assertTileWithIdExists(iz, id   )) return;
+    if (      !_checkInBounds        (iz, where)) return;
+    if (      !_checkGridIsEmptyAt   (iz, at   )) return;
+    if (id && !_checkTileWithIdExists(iz, id   )) return;
     iz.grid[at] = id;
   },
 
   putScrogAt(iz: Island, id: string | undefined, where: Where) {
     const tile = Island.getTileAt(iz, where);
-    if (!_assertTileExists(tile)) return;
+    if (!_checkTileExists(tile)) return;
     tile.scrogId = id;
   },
 
   putThingAt(iz: Island, id: string | undefined, where: Where) {
     const tile = Island.getTileAt(iz, where);
-    if (!_assertTileExists(tile)) return;
+    if (!_checkTileExists(tile)) return;
     tile.thingId = id;
   },
 
   putSoundAt(iz: Island, id: string | undefined, where: Where) {
     const tile = Island.getTileAt(iz, where);
-    if (!_assertTileExists(tile)) return;
+    if (!_checkTileExists(tile)) return;
     tile.soundId = id;
   },
 
   putScrogOn(iz: Island, id: string | undefined, on: string) {
     const tile = Island.getTileWithId(iz, on);
-    if (!_assertTileExists(tile)) return;
+    if (!_checkTileExists(tile)) return;
     tile.scrogId = id;
   },
 
   putThingOn(iz: Island, id: string | undefined, on: string) {
     const tile = Island.getTileWithId(iz, on);
-    if (!_assertTileExists(tile)) return;
+    if (!_checkTileExists(tile)) return;
     tile.thingId = id;
   },
 
   putSoundOn(iz: Island, id: string | undefined, on: string) {
     const tile = Island.getTileWithId(iz, on);
-    if (!_assertTileExists(tile)) return;
+    if (!_checkTileExists(tile)) return;
     tile.soundId = id;
   }
 }
@@ -184,89 +185,89 @@ function _at(iz: Island, {x, y}: Where) {
   return y * iz.w + x;
 }
 
-function _assertTileExists(tile: Tile | undefined): tile is Tile {
+function _checkTileExists(tile: Tile | undefined): tile is Tile {
   if (!tile) {
-    console.warn(`[_assertTileExists] Tile does not exist.`);
+    console.warn(`[_checkTileExists] Tile does not exist.`);
     return false;
   }
   return true;
 }
 
-function _assertInBounds(iz: Island, {x, y}: Where) {
+function _checkInBounds(iz: Island, {x, y}: Where) {
   if (!_in(iz, {x, y})) {
-    console.warn(`[_assertInBounds] Where '${x}, ${y}' is out of bounds.`);
+    console.warn(`[_checkInBounds] Where '${x}, ${y}' is out of bounds.`);
     return false;
   }
   return true;
 }
 
-function _assertTileWithIdExists(iz: Island, id: string) {
+function _checkTileWithIdExists(iz: Island, id: string) {
   if (!(id in iz.tiles)) {
-    console.warn(`[_assertTileWithIdExists] Tile with '${id}' does not exist.`);
+    console.warn(`[_checkTileWithIdExists] Tile with '${id}' does not exist.`);
     return false;
   }
   return true;
 }
 
-function _assertThingWithIdExists(iz: Island, id: string) {
+function _checkThingWithIdExists(iz: Island, id: string) {
   if (!(id in iz.things)) {
-    console.warn(`[_assertThingWithIdExists] Thing with '${id}' does not exist.`);
+    console.warn(`[_checkThingWithIdExists] Thing with '${id}' does not exist.`);
     return false;
   }
   return true;
 }
 
-function _assertScrogWithIdExists(iz: Island, id: string) {
+function _checkScrogWithIdExists(iz: Island, id: string) {
   if (!(id in iz.scrogs)) {
-    console.warn(`[_assertScrogWithIdExists] Scrog with '${id}' does not exist.`);
+    console.warn(`[_checkScrogWithIdExists] Scrog with '${id}' does not exist.`);
     return false;
   }
   return true;
 }
 
-function _assertSoundWithIdExists(iz: Island, id: string) {
+function _checkSoundWithIdExists(iz: Island, id: string) {
   if (!(id in iz.sounds)) {
-    console.warn(`[_assertSoundWithIdExists] Sound with '${id}' does not exist.`);
+    console.warn(`[_checkSoundWithIdExists] Sound with '${id}' does not exist.`);
     return false;
   }
   return true;
 }
 
-function _assertTileWithIdDoesNotExist(iz: Island, id: string) {
+function _checkTileWithIdDoesNotExist(iz: Island, id: string) {
   if (id in iz.tiles) {
-    console.warn(`[_assertTileWithIdDoesNotExist] Tile with '${id}' already exists.`);
+    console.warn(`[_checkTileWithIdDoesNotExist] Tile with '${id}' already exists.`);
     return false;
   }
   return true;
 }
 
-function _assertThingWithIdDoesNotExist(iz: Island, id: string) {
+function _checkThingWithIdDoesNotExist(iz: Island, id: string) {
   if (id in iz.things) {
-    console.warn(`[_assertThingWithIdDoesNotExist] Thing with '${id}' already exists.`);
+    console.warn(`[_checkThingWithIdDoesNotExist] Thing with '${id}' already exists.`);
     return false;
   }
   return true;
 }
 
-function _assertScrogWithIdDoesNotExist(iz: Island, id: string) {
+function _checkScrogWithIdDoesNotExist(iz: Island, id: string) {
   if (id in iz.scrogs) {
-    console.warn(`[_assertScrogWithIdDoesNotExist] Scrog with '${id}' already exists.`);
+    console.warn(`[_checkScrogWithIdDoesNotExist] Scrog with '${id}' already exists.`);
     return false;
   }
   return true;
 }
 
-function _assertSoundWithIdDoesNotExist(iz: Island, id: string) {
+function _checkSoundWithIdDoesNotExist(iz: Island, id: string) {
   if (id in iz.sounds) {
-    console.warn(`[_assertSoundWithIdDoesNotExist] Sound with '${id}' already exists.`);
+    console.warn(`[_checkSoundWithIdDoesNotExist] Sound with '${id}' already exists.`);
     return false;
   }
   return true;
 }
 
-function _assertGridIsEmptyAt(iz: Island, at: number) {
+function _checkGridIsEmptyAt(iz: Island, at: number) {
   if (iz.grid[at]) {
-    console.warn(`[_assertGridIsEmptyAt] Grid at index '${at}' is not empty.`);
+    console.warn(`[_checkGridIsEmptyAt] Grid at index '${at}' is not empty.`);
     return false;
   }
   return true;
