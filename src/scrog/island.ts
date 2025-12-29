@@ -1,8 +1,8 @@
 import type { Scrog } from "./scrog"
 import type { Sound } from "./sound"
-import type { Thing } from "./thing"
-import type { Tile  } from "./tile"
-import type { Where } from "./where"
+import { Thing } from "./thing"
+import { Tile, GRASS  } from "./tile"
+import { Where } from "./where"
 
 export type Island = {
   tiles : {[tileId : string]: Tile }
@@ -21,7 +21,42 @@ export const Island = {
     w = 10, 
     h = 10
   ) {
+    return {
+      tiles : {},
+      things: {},
+      scrogs: {},
+      sounds: {},
+      grid  : Array(w * h).fill(undefined),
+      w, h
+    } satisfies Island;
+  },
 
+  populate(iz: Island) {
+    for (let x = 1; x < iz.w - 1; x++)
+      for (let y = 1; y < iz.h - 1; y++)
+        if (Math.random() < 0.5) {
+          const tile = Tile.Grass(iz);
+          Island.putTileAt(iz, tile.id, {x, y});
+
+          if (Math.random() < 0.5) {
+            const berry = Thing.Berry(iz);
+            Island.putThingOn(iz, berry.id, tile.id);
+          }
+        }
+
+    for (let x = 0; x < iz.w; x++)
+      for (let y = 0; y < iz.h; y++)
+        if (!Island.getTileAt(iz, {x, y})) {
+          const n = Island.getTileAt(iz, Where.northOf({x, y}))?.is !== GRASS ? 0 : 1;
+          const e = Island.getTileAt(iz, Where.eastOf ({x, y}))?.is !== GRASS ? 0 : 1;
+          const s = Island.getTileAt(iz, Where.southOf({x, y}))?.is !== GRASS ? 0 : 1;
+          const w = Island.getTileAt(iz, Where.westOf ({x, y}))?.is !== GRASS ? 0 : 1;
+
+          let tile;
+          if (n + e + s + w === 0) tile = Tile.DeepWater(iz);
+          else                     tile = Tile.Water    (iz);
+          Island.putTileAt(iz, tile.id, {x, y});
+        }
   },
 
   addTile(iz: Island, tile: Tile) {
