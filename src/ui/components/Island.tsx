@@ -5,6 +5,7 @@ import { Scrog as ScrogType } from "../../scrog/scrog"
 import { GRASS, WATER, DEEP_WATER, Tile as TileType } from "../../scrog/tile"
 import { RED, YELLOW, GREEN, CYAN, BLUE, MAGENTA, WHITE, BLACK, Color as ColorType } from "../../scrog/color"
 import clsx from "clsx"
+import { EAST, NORTH, SOUTH, WEST, Where } from "../../scrog/where"
 
 
 
@@ -26,8 +27,11 @@ function Tile({ iz, tile }: { iz: Iz, tile: TileType }) {
 
 function Scrog({ scrog }: { scrog: ScrogType }) {
   return (
-    <div className="absolute">
-      {scrog.id}
+    <div className="absolute text-2xl w-fit h-fit top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      {scrog.facing === NORTH && "⬆️"}
+      {scrog.facing === EAST  && "➡️"}
+      {scrog.facing === SOUTH && "⬇️"}
+      {scrog.facing === WEST  && "⬅️"}
     </div>
   )
 }
@@ -58,7 +62,9 @@ function Sound({ sound }: { sound: SoundType }) {
 export default function Island() {
   const iz = Iz.new();
   Iz.populate(iz);
-  console.log(iz);
+
+  const scrog = ScrogType.Green(iz);
+  Iz.putScrogAt(iz, scrog.id, Where.new(5, 5));
 
   return (
     <div className="grid grid-cols-10 w-fit h-fit rounded-lg overflow-hidden">

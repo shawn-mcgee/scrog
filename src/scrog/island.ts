@@ -34,11 +34,11 @@ export const Island = {
   populate(iz: Island) {
     for (let x = 1; x < iz.w - 1; x++)
       for (let y = 1; y < iz.h - 1; y++)
-        if (Math.random() < 0.5) {
+        if (Math.random() < 0.75) {
           const tile = Tile.Grass(iz);
           Island.putTileAt(iz, tile.id, {x, y});
 
-          if (Math.random() < 0.5) {
+          if (Math.random() < 0.25) {
             const berry = Thing.Berry(iz);
             Island.putThingOn(iz, berry.id, tile.id);
           }
