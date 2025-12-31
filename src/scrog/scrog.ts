@@ -16,51 +16,51 @@ export const Scrog = {
     return { id, color, facing, where } satisfies Scrog
   },
 
-  Red(iz: Island, facing: Where.Absolute = EAST, where: Where = Where.new()) { 
-    const scrog = Scrog.new(uniqueId(iz.scrogs), Color.Red(), facing, where);
-    iz.scrogs[scrog.id] = scrog;
+  Red(on: Island, facing: Where.Absolute = EAST, where: Where = Where.new()) { 
+    const scrog = Scrog.new(uniqueId(on.scrogs), Color.Red(), facing, where);
+    on.scrogs[scrog.id] = scrog;
     return scrog;
   },
 
-  Yellow(iz: Island, facing: Where.Absolute = EAST, where: Where = Where.new()) { 
-    const scrog = Scrog.new(uniqueId(iz.scrogs), Color.Yellow(), facing, where);
-    iz.scrogs[scrog.id] = scrog;
+  Yellow(on: Island, facing: Where.Absolute = EAST, where: Where = Where.new()) { 
+    const scrog = Scrog.new(uniqueId(on.scrogs), Color.Yellow(), facing, where);
+    on.scrogs[scrog.id] = scrog;
     return scrog;
   },
 
-  Green(iz: Island, facing: Where.Absolute = EAST, where: Where = Where.new()) { 
-    const scrog = Scrog.new(uniqueId(iz.scrogs), Color.Green(), facing, where);
-    iz.scrogs[scrog.id] = scrog;
+  Green(on: Island, facing: Where.Absolute = EAST, where: Where = Where.new()) { 
+    const scrog = Scrog.new(uniqueId(on.scrogs), Color.Green(), facing, where);
+    on.scrogs[scrog.id] = scrog;
     return scrog;
   },
 
-  Cyan(iz: Island, facing: Where.Absolute = EAST, where: Where = Where.new()) { 
-    const scrog = Scrog.new(uniqueId(iz.scrogs), Color.Cyan(), facing, where);
-    iz.scrogs[scrog.id] = scrog;
+  Cyan(on: Island, facing: Where.Absolute = EAST, where: Where = Where.new()) { 
+    const scrog = Scrog.new(uniqueId(on.scrogs), Color.Cyan(), facing, where);
+    on.scrogs[scrog.id] = scrog;
     return scrog;
   },
 
-  Blue(iz: Island, facing: Where.Absolute = EAST, where: Where = Where.new()) { 
-    const scrog = Scrog.new(uniqueId(iz.scrogs), Color.Blue(), facing, where);
-    iz.scrogs[scrog.id] = scrog;
+  Blue(on: Island, facing: Where.Absolute = EAST, where: Where = Where.new()) { 
+    const scrog = Scrog.new(uniqueId(on.scrogs), Color.Blue(), facing, where);
+    on.scrogs[scrog.id] = scrog;
     return scrog;
   },
 
-  Magenta(iz: Island, facing: Where.Absolute = EAST, where: Where = Where.new()) { 
-    const scrog = Scrog.new(uniqueId(iz.scrogs), Color.Magenta(), facing, where);
-    iz.scrogs[scrog.id] = scrog;
+  Magenta(on: Island, facing: Where.Absolute = EAST, where: Where = Where.new()) { 
+    const scrog = Scrog.new(uniqueId(on.scrogs), Color.Magenta(), facing, where);
+    on.scrogs[scrog.id] = scrog;
     return scrog;
   },
 
-  White(iz: Island, facing: Where.Absolute = EAST, where: Where = Where.new()) { 
-    const scrog = Scrog.new(uniqueId(iz.scrogs), Color.White(), facing, where);
-    iz.scrogs[scrog.id] = scrog;
+  White(on: Island, facing: Where.Absolute = EAST, where: Where = Where.new()) { 
+    const scrog = Scrog.new(uniqueId(on.scrogs), Color.White(), facing, where);
+    on.scrogs[scrog.id] = scrog;
     return scrog;
   },
 
-  Black(iz: Island, facing: Where.Absolute = EAST, where: Where = Where.new()) { 
-    const scrog = Scrog.new(uniqueId(iz.scrogs), Color.Black(), facing, where);
-    iz.scrogs[scrog.id] = scrog;
+  Black(on: Island, facing: Where.Absolute = EAST, where: Where = Where.new()) { 
+    const scrog = Scrog.new(uniqueId(on.scrogs), Color.Black(), facing, where);
+    on.scrogs[scrog.id] = scrog;
     return scrog;
   },  
 }

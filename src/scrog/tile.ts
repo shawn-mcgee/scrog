@@ -16,10 +16,6 @@ export type Tile = {
   readonly is   : Tile.Is
   readonly color: Color
            where: Where
-
-  scrogId ?: string
-  thingId ?: string
-  soundId ?: string
 }
 
 export namespace Tile {
@@ -31,21 +27,21 @@ export const Tile = {
     return { id, is, color, where} satisfies Tile
   },
 
-  Grass    (iz: Island, where: Where = Where.new()) { 
-    const tile = Tile.new(uniqueId(iz.tiles), GRASS     , Color.Green(), where);
-    iz.tiles[tile.id] = tile;
+  Grass    (on: Island, where: Where = Where.new()) { 
+    const tile = Tile.new(uniqueId(on.tiles), GRASS     , Color.Green(), where);
+    on.tiles[tile.id] = tile;
     return tile;
   },
 
-  Water    (iz: Island, where: Where = Where.new()) { 
-    const tile = Tile.new(uniqueId(iz.tiles), WATER     , Color.Blue (), where);
-    iz.tiles[tile.id] = tile;
+  Water    (on: Island, where: Where = Where.new()) { 
+    const tile = Tile.new(uniqueId(on.tiles), WATER     , Color.Blue (), where);
+    on.tiles[tile.id] = tile;
     return tile;
   },
 
-  DeepWater(iz: Island, where: Where = Where.new()) { 
-    const tile = Tile.new(uniqueId(iz.tiles), DEEP_WATER, Color.Blue (), where);
-    iz.tiles[tile.id] = tile;
+  DeepWater(on: Island, where: Where = Where.new()) { 
+    const tile = Tile.new(uniqueId(on.tiles), DEEP_WATER, Color.Blue (), where);
+    on.tiles[tile.id] = tile;
     return tile;
   },
 }

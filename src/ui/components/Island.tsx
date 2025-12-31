@@ -1,76 +1,115 @@
-import { Island as Iz } from "../../scrog/island"
-import { SPLASH, RUSTLE, CHOMP, CROAK, Sound as SoundType } from "../../scrog/sound"
-import { BERRY, Thing as ThingType } from "../../scrog/thing"
-import { Scrog as ScrogType } from "../../scrog/scrog"
-import { GRASS, WATER, DEEP_WATER, Tile as TileType } from "../../scrog/tile"
-import { RED, YELLOW, GREEN, CYAN, BLUE, MAGENTA, WHITE, BLACK, Color as ColorType } from "../../scrog/color"
-import clsx from "clsx"
-import { EAST, NORTH, SOUTH, WEST, Where } from "../../scrog/where"
+import clsx from "clsx";
+import { type Cell, Island } from "../../scrog/island";
+import type { Scrog } from "../../scrog/scrog";
+import { type Sound, CHOMP, CROAK, OUCH, RUSTLE, SPLASH } from "../../scrog/sound";
+import { type Thing, BERRY } from "../../scrog/thing";
+import { type Tile, DEEP_WATER, GRASS, WATER } from "../../scrog/tile";
+import { paint } from "../../scrog/painter";
+import { Where } from "../../scrog/where";
+import { useEffect, useState } from "react";
 
 
+function CellView({iz, cell, where, setWhere}: {iz: Island, cell: Cell, where: Where, setWhere: (where: Where) => void}) {
+  const tile  = cell.tileId  && Island.getTileWithId (iz, cell.tileId );
+  const thing = cell.thingId && Island.getThingWithId(iz, cell.thingId);
+  const scrog = cell.scrogId && Island.getScrogWithId(iz, cell.scrogId);
+  const sound = cell.soundId && Island.getSoundWithId(iz, cell.soundId);
 
+  function onClick() {
+    setWhere(cell.where);
+  }
 
-function Tile({ iz, tile }: { iz: Iz, tile: TileType }) {
   return (
-    <div className={clsx(
-      "relative w-20 h-20",
+    <div className={clsx("text-2xl relative w-20 h-20 tooltip",
+      cell.where === where && "tooltip-open border-3 border-warning",
+      cell.where !== where && "p-3"
+    )} onClick={onClick}>
+      {tile  && <TileView  tile ={tile } />}
+      {thing && <ThingView thing={thing} />}
+      {scrog && <ScrogView scrog={scrog} />}
+      {sound && <SoundView sound={sound} />}
+    </div>
+  )
+}
+
+function TileView({tile}: {tile: Tile}) {
+  return (
+    <div className={clsx("absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full",
       tile.is === GRASS      && "bg-green-500",
-      tile.is === WATER      && "bg-blue-500",
-      tile.is === DEEP_WATER && "bg-blue-700"
-    )}>
-      {tile.thingId && <Thing thing={Iz.getThingWithId(iz, tile.thingId)!}/>}
-      {tile.scrogId && <Scrog scrog={Iz.getScrogWithId(iz, tile.scrogId)!}/>}
-      {tile.soundId && <Sound sound={Iz.getSoundWithId(iz, tile.soundId)!}/>}
+      tile.is === WATER      && "bg-blue-400",
+      tile.is === DEEP_WATER && "bg-blue-900",
+    )} />
+  )
+}
+
+function ThingView({thing}: {thing: Thing}) {
+  return (
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-fit h-fit">
+      { thing.is === BERRY && "🍓" }
     </div>
   )
 }
 
-function Scrog({ scrog }: { scrog: ScrogType }) {
+function ScrogView({scrog}: {scrog: Scrog}) {
   return (
-    <div className="absolute text-2xl w-fit h-fit top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-      {scrog.facing === NORTH && "⬆️"}
-      {scrog.facing === EAST  && "➡️"}
-      {scrog.facing === SOUTH && "⬇️"}
-      {scrog.facing === WEST  && "⬅️"}
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-fit h-fit">
+      🐸
     </div>
   )
 }
 
-function Thing({ thing }: { thing: ThingType }) {
+function SoundView({sound}: {sound: Sound}) {
   return (
-    <div className="absolute text-2xl w-fit h-fit top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-      {thing.is === BERRY && "🍓"}
-    </div>
-  )
-}
-
-function Sound({ sound }: { sound: SoundType }) {
-  return (
-    <div className="absolute text-2xl w-fit h-fit top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-      {sound.is === SPLASH && "💧"}
+    <div className="tooltip-content text-2xl">
       {sound.is === RUSTLE && "🍃"}
-      {sound.is === CHOMP  && "😋"}
+      {sound.is === SPLASH && "💧"}
       {sound.is === CROAK  && "❤️"}
+      {sound.is === CHOMP  && "😋"}
+      {sound.is === OUCH   && "💢"}
     </div>
   )
 }
 
+function Inspector({iz, where}: {iz: Island, where: Where}) {
+  const tile  = Island.getTileAt (iz, where);
+  const thing = Island.getThingAt(iz, where);
+  const scrog = Island.getScrogAt(iz, where);
+  const sound = Island.getSoundAt(iz, where);
 
+  return <div className="flex flex-col">
+    <h1>Inspector</h1>
+    <span>{tile  && `tile : ${tile .is}`}</span>
+    <span>{thing && `thing: ${thing.is}`}</span>
+    <span>{sound && `sound: ${sound.is}`}</span>
+  </div>
+}
 
+function IslandView({iz, where, setWhere}: {
+  iz: Island, 
+  where: Where,
+  setWhere: (where: Where) => void
+}) {  
+  return (
+    <div className="w-fit h-fit grid rounded-4xl overflow-hidden" style={{
+      "gridTemplateColumns": `repeat(${iz.w}, 1fr)`
+    }}>
+      {iz.grid.map((cell, i) => (
+        <CellView key={i} iz={iz} cell={cell} where={where} setWhere={setWhere} />
+      ))}
+    </div>
+  )
+}
 
+export default function FullView() {
 
-export default function Island() {
-  const iz = Iz.new();
-  Iz.populate(iz);
+  const [iz, setIz] = useState<Island>(paint(Island.new()));
 
-  const scrog = ScrogType.Green(iz);
-  Iz.putScrogAt(iz, scrog.id, Where.new(5, 5));
+  const [where, setWhere] = useState<Where>(Where.new(0, 0));
 
   return (
-    <div className="grid grid-cols-10 w-fit h-fit rounded-lg overflow-hidden">
-      {Object.values(iz.grid).map((id, i) => {
-        return <Tile key={id} iz={iz} tile={Iz.getTileWithId(iz, id)!}/>
-      })}
+    <div className="w-full flex">
+      <IslandView iz={iz} where={where} setWhere={setWhere} />
+      <Inspector iz={iz} where={where} />
     </div>
   )
 }

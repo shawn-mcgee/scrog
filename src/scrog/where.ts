@@ -23,14 +23,19 @@ export namespace Where {
   export type Relative = HERE | LEFT | RIGHT | AHEAD
 }
 
-export type Where = {
-  readonly x: number
-  readonly y: number
-}
+export type Where = [number, number]
 
 export const Where = {
-  new(x = 0, y = 0) {
-    return { x, y } satisfies Where
+  new(row = 0, col = 0) {
+    return [row, col] satisfies Where
+  },
+
+  row(where: Where) {
+    return where[0];
+  },
+
+  col(where: Where) {
+    return where[1];
   },
 
   left (facing: Where.Absolute) {
@@ -58,20 +63,20 @@ export const Where = {
     }
   },
 
-  northOf({x, y}: Where) {
-    return Where.new(x, y-1);
+  northOf([row, col]: Where) {
+    return Where.new(row-1, col);
   },
 
-  southOf({x, y}: Where) {
-    return Where.new(x, y+1);
+  southOf([row, col]: Where) {
+    return Where.new(row+1, col);
   },
 
-  eastOf({x, y}: Where) {
-    return Where.new(x+1, y);
+  eastOf([row, col]: Where) {
+    return Where.new(row, col+1);
   },
 
-  westOf({x, y}: Where) {
-    return Where.new(x-1, y);
+  westOf([row, col]: Where) {
+    return Where.new(row, col-1);
   },
 
   leftOf (where: Where, facing: Where.Absolute) {

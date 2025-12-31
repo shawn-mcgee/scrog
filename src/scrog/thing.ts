@@ -1,6 +1,6 @@
 import { Color } from "./color";
 import { uniqueId } from "./helpers";
-import type { Island } from "./island";
+import { Island } from "./island";
 import { Where } from "./where";
 
 export const BERRY = "berry" as const;
@@ -23,9 +23,9 @@ export const Thing = {
     return { id, is, color, where } satisfies Thing
   },
 
-  Berry(iz: Island) { 
-    const thing = Thing.new(uniqueId(iz.things), BERRY, Color.Red());
-    iz.things[thing.id] = thing;
+  Berry(on: Island) { 
+    const thing = Thing.new(uniqueId(on.things), BERRY, Color.Red());
+    Island.addThing(on, thing);
     return thing;
   },
 }
