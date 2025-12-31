@@ -1,15 +1,15 @@
 import clsx from "clsx";
-import { type Cell, Island } from "../../scrog/island";
+import { useState } from "react";
+import { type Square, Island } from "../../scrog/island";
+import { paint } from "../../scrog/painter";
 import type { Scrog } from "../../scrog/scrog";
 import { type Sound, CHOMP, CROAK, OUCH, RUSTLE, SPLASH } from "../../scrog/sound";
 import { type Thing, BERRY } from "../../scrog/thing";
 import { type Tile, DEEP_WATER, GRASS, WATER } from "../../scrog/tile";
-import { paint } from "../../scrog/painter";
-import { Where } from "../../scrog/where";
-import { useEffect, useState } from "react";
+import { EAST, NORTH, SOUTH, WEST, Where } from "../../scrog/where";
 
 
-function CellView({iz, cell, where, setWhere}: {iz: Island, cell: Cell, where: Where, setWhere: (where: Where) => void}) {
+function CellView({iz, cell, where, setWhere}: {iz: Island, cell: Square, where: Where, setWhere: (where: Where) => void}) {
   const tile  = cell.tileId  && Island.getTileWithId (iz, cell.tileId );
   const thing = cell.thingId && Island.getThingWithId(iz, cell.thingId);
   const scrog = cell.scrogId && Island.getScrogWithId(iz, cell.scrogId);
@@ -53,7 +53,10 @@ function ThingView({thing}: {thing: Thing}) {
 function ScrogView({scrog}: {scrog: Scrog}) {
   return (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-fit h-fit">
-      🐸
+      {scrog.facing === NORTH && "⬆️"}
+      {scrog.facing === EAST  && "➡️"}
+      {scrog.facing === SOUTH && "⬇️"}
+      {scrog.facing === WEST  && "⬅️"}
     </div>
   )
 }
@@ -93,7 +96,7 @@ function IslandView({iz, where, setWhere}: {
     <div className="w-fit h-fit grid rounded-4xl overflow-hidden" style={{
       "gridTemplateColumns": `repeat(${iz.w}, 1fr)`
     }}>
-      {iz.grid.map((cell, i) => (
+      {iz.squares.map((cell, i) => (
         <CellView key={i} iz={iz} cell={cell} where={where} setWhere={setWhere} />
       ))}
     </div>

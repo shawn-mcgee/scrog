@@ -1,10 +1,10 @@
 import type { Scrog } from "./scrog"
-import type { Sound } from "./sound"
-import type { Thing } from "./thing"
-import type { Tile  } from "./tile"
-import { Where } from "./where"
+import { Sound } from "./sound"
+import { BERRY, type Thing } from "./thing"
+import { DEEP_WATER, GRASS, WATER, type Tile  } from "./tile"
+import { AHEAD, HERE, LEFT, RIGHT, Where } from "./where"
 
-export type Cell = {
+export type Square = {
   readonly where: Where
   tileId ?: string;
   thingId?: string;
@@ -12,9 +12,9 @@ export type Cell = {
   soundId?: string;
 }
 
-const Cell = {
+const Square = {
   new(where: Where = Where.new()) {
-    return { where } satisfies Cell
+    return { where } satisfies Square
   }
 }
 
@@ -24,9 +24,9 @@ export type Island = {
   scrogs: {[scrogId: string]: Scrog}
   sounds: {[soundId: string]: Sound}
 
-  readonly grid: Array<Cell>
-  readonly w   : number
-  readonly h   : number
+  readonly squares: Array<Square>
+  readonly w      : number
+  readonly h      : number
 }
 
 export const Island = {
@@ -34,17 +34,17 @@ export const Island = {
     w = 10, 
     h = 10
   ) {
-    const grid = Array(w * h).fill(0).map((_, i) => {
+    const squares = Array(w * h).fill(0).map((_, i) => {
       const row = Math.floor(i / w);
       const col = Math.floor(i % w);
-      return Cell.new([row, col]);
+      return Square.new([row, col]);
     })
     return {
       tiles : {},
       things: {},
       scrogs: {},
       sounds: {},
-      grid, w, h
+      squares, w, h
     } satisfies Island;
   },
 
@@ -79,9 +79,9 @@ export const Island = {
     }
 
     delete iz.tiles[id];
-    for (const cell of iz.grid)
-      if (cell.tileId === id)
-        delete cell.tileId;
+    for (const square of iz.squares)
+      if (square.tileId === id)
+        delete square.tileId;
   },
 
   removeThing(iz: Island, id: string) {
@@ -91,9 +91,9 @@ export const Island = {
     }
 
     delete iz.things[id];
-    for (const cell of iz.grid)
-      if (cell.thingId === id)
-        delete cell.thingId;
+    for (const square of iz.squares)
+      if (square.thingId === id)
+        delete square.thingId;
   },
 
   removeScrog(iz: Island, id: string) {
@@ -103,9 +103,9 @@ export const Island = {
     }
 
     delete iz.scrogs[id];
-    for (const cell of iz.grid)
-      if (cell.scrogId === id)
-        delete cell.scrogId;
+    for (const square of iz.squares)
+      if (square.scrogId === id)
+        delete square.scrogId;
   },
 
   removeSound(iz: Island, id: string) {
@@ -115,9 +115,9 @@ export const Island = {
     }
 
     delete iz.sounds[id];
-    for (const cell of iz.grid)
-      if (cell.soundId === id)
-        delete cell.soundId;
+    for (const square of iz.squares)
+      if (square.soundId === id)
+        delete square.soundId;
   },
 
   getTileWithId(iz: Island, id: string) {
@@ -158,19 +158,19 @@ export const Island = {
       return undefined;
     }
 
-    const cell = iz.grid[_at(iz, where)];
+    const square = iz.squares[_at(iz, where)];
 
-    if (!cell       ) {
+    if (!square       ) {
       console.warn(`[getTileAt] Grid at ${where} is undefined.`);
       return undefined;
     }
 
-    if (!cell.tileId) {
+    if (!square.tileId) {
       console.warn(`[getTileAt] Grid at ${where} has no tileId.`);
       return undefined;
     }
 
-    return Island.getTileWithId(iz, cell.tileId);
+    return Island.getTileWithId(iz, square.tileId);
   },
 
   getThingAt(iz: Island, where: Where) {
@@ -179,19 +179,19 @@ export const Island = {
       return undefined;
     }
 
-    const cell = iz.grid[_at(iz, where)];
+    const square = iz.squares[_at(iz, where)];
 
-    if (!cell        ) {
+    if (!square        ) {
       console.warn(`[getThingAt] Grid at ${where} is undefined.`);
       return undefined;
     }
 
-    if (!cell.thingId) {
+    if (!square.thingId) {
       console.warn(`[getThingAt] Grid at ${where} has no thingId.`);
       return undefined;
     }
 
-    return Island.getThingWithId(iz, cell.thingId);
+    return Island.getThingWithId(iz, square.thingId);
   },
 
   getScrogAt(iz: Island, where: Where) {
@@ -200,19 +200,19 @@ export const Island = {
       return undefined;
     }
 
-    const cell = iz.grid[_at(iz, where)];
+    const square = iz.squares[_at(iz, where)];
 
-    if (!cell        ) {
+    if (!square        ) {
       console.warn(`[getScrogAt] Grid at ${where} is undefined.`);
       return undefined;
     }
 
-    if (!cell.scrogId) {
+    if (!square.scrogId) {
       console.warn(`[getScrogAt] Grid at ${where} has no scrogId.`);
       return undefined;
     }
 
-    return Island.getScrogWithId(iz, cell.scrogId);
+    return Island.getScrogWithId(iz, square.scrogId);
   },
 
   getSoundAt(iz: Island, where: Where) {
@@ -221,19 +221,19 @@ export const Island = {
       return undefined;
     }
 
-    const cell = iz.grid[_at(iz, where)];
+    const square = iz.squares[_at(iz, where)];
 
-    if (!cell        ) {
+    if (!square        ) {
       console.warn(`[getSoundAt] Grid at ${where} is undefined.`);
       return undefined;
     }
 
-    if (!cell.soundId) {
+    if (!square.soundId) {
       console.warn(`[getSoundAt] Grid at ${where} has no soundId.`);
       return undefined;
     }
 
-    return Island.getSoundWithId(iz, cell.soundId);
+    return Island.getSoundWithId(iz, square.soundId);
   },
 
   putTileAt(iz: Island, id: string | undefined, where: Where) {
@@ -242,9 +242,9 @@ export const Island = {
       return;
     }      
 
-    const cell = iz.grid[_at(iz, where)];
+    const square = iz.squares[_at(iz, where)];
 
-    if (!cell) {
+    if (!square) {
       console.warn(`[putTileAt] Grid at ${where} is undefined.`);
       return;
     }
@@ -255,14 +255,14 @@ export const Island = {
       if (!tile) 
         throw `[putTileAt] Tile with id '${id}' does not exist.`;
 
-      for (const cell of iz.grid)
-        if (cell.tileId === id)
+      for (const square of iz.squares)
+        if (square.tileId === id)
           throw `[putTileAt] Tile with id '${id}' already exists at ${where}.`;
 
       tile.where = [...where];
     }
 
-    cell.tileId = id;
+    square.tileId = id;
   },
 
   putThingAt(iz: Island, id: string | undefined, where: Where) {
@@ -271,9 +271,9 @@ export const Island = {
       return;
     }
 
-    const cell = iz.grid[_at(iz, where)];
+    const square = iz.squares[_at(iz, where)];
 
-    if (!cell) {
+    if (!square) {
       console.warn(`[putThingAt] Grid at ${where} is undefined.`);
       return;
     }
@@ -284,14 +284,14 @@ export const Island = {
       if (!thing) 
         throw `[putThingAt] Thing with id '${id}' does not exist.`;
 
-      for (const cell of iz.grid)
-        if (cell.thingId === id)
+      for (const square of iz.squares)
+        if (square.thingId === id)
           throw `[putThingAt] Thing with id '${id}' already exists at ${where}.`;
 
       thing.where = [...where];
     }
 
-    cell.thingId = id;
+    square.thingId = id;
   },
 
   putScrogAt(iz: Island, id: string | undefined, where: Where) {
@@ -300,9 +300,9 @@ export const Island = {
       return;
     }
 
-    const cell = iz.grid[_at(iz, where)];
+    const square = iz.squares[_at(iz, where)];
 
-    if (!cell) {
+    if (!square) {
       console.warn(`[putScrogAt] Grid at ${where} is undefined.`);
       return;
     }
@@ -313,14 +313,14 @@ export const Island = {
       if (!scrog) 
         throw `[putScrogAt] Scrog with id '${id}' does not exist.`;
 
-      for (const cell of iz.grid)
-        if (cell.scrogId === id)
+      for (const square of iz.squares)
+        if (square.scrogId === id)
           throw `[putScrogAt] Scrog with id '${id}' already exists at ${where}.`;
 
       scrog.where = [...where];
     }
 
-    cell.scrogId = id;
+    square.scrogId = id;
   },
 
   putSoundAt(iz: Island, id: string | undefined, where: Where) {
@@ -329,9 +329,9 @@ export const Island = {
       return;
     }
 
-    const cell = iz.grid[_at(iz, where)];
+    const square = iz.squares[_at(iz, where)];
 
-    if (!cell) {
+    if (!square) {
       console.warn(`[putSoundAt] Grid at ${where} is undefined.`);
       return;
     }
@@ -342,15 +342,105 @@ export const Island = {
       if (!sound) 
         throw `[putSoundAt] Sound with id '${id}' does not exist.`;
 
-      for (const cell of iz.grid)
-        if (cell.soundId === id)
+      for (const square of iz.squares)
+        if (square.soundId === id)
           throw `[putSoundAt] Sound with id '${id}' already exists at ${where}.`;
 
       sound.where = [...where];
     }
 
-    cell.soundId = id;
+    square.soundId = id;
   },
+
+  scrogHop(iz: Island, id: string) {
+    const scrog = Island.getScrogWithId(iz, id);
+
+    if (!scrog)
+      throw `[scrogHop] Scrog with id '${id}' does not exist.`;
+
+    const here  = scrog.where;
+    const ahead = Where.to(scrog.where, scrog.facing, AHEAD);
+
+    const scrogAhead = Island.getScrogAt(iz, ahead);
+
+    if (scrogAhead) {
+      // a friendly scrog is in the way
+      Island.putSoundAt(iz, Sound.Ouch(iz, scrog.id).id, here);
+      return;
+    }
+
+    const tileAhead  = Island.getTileAt (iz, ahead);    
+
+    if (!tileAhead) {
+      // at the edge of the island
+      Island.putSoundAt(iz, Sound.Ouch(iz, scrog.id).id, here);
+    } else if (tileAhead.is === GRASS) {
+      // hop into the grass
+      Island.putSoundAt(iz, Sound.Rustle(iz, scrog.id).id, ahead);
+      Island.putScrogAt(iz, undefined, here);
+      Island.putScrogAt(iz, scrog.id, ahead);
+    } else if (tileAhead.is === WATER) {
+      // hop into the water
+      Island.putSoundAt(iz, Sound.Splash(iz, scrog.id).id, ahead);
+      Island.putScrogAt(iz, undefined, here);
+      Island.putScrogAt(iz, scrog.id, ahead);
+    } else if (tileAhead.is === DEEP_WATER) {
+      // drowns
+      Island.putSoundAt(iz, Sound.Splash(iz, scrog.id).id, ahead);
+      Island.putScrogAt(iz, undefined, here);
+    }  
+  },
+
+  scrogTurn(iz: Island, id: string, where: LEFT | RIGHT) {
+    const scrog = Island.getScrogWithId(iz, id);
+
+    if (!scrog)
+      throw `[scrogTurn] Scrog with id '${id}' does not exist.`;
+
+    scrog.facing = Where.turn(scrog.facing, where);
+  },
+
+  scrogEat(iz: Island, id: string, where: HERE | AHEAD = HERE) {
+    const scrog = Island.getScrogWithId(iz, id);
+
+    if (!scrog)
+      throw `[scrogEat] Scrog with id '${id}' does not exist.`;
+
+    const here  = scrog.where;
+    const ahead = Where.to(scrog.where, scrog.facing, AHEAD);
+
+    if (where === HERE) {
+      const thingHere = Island.getThingAt(iz, here);
+
+      if (thingHere?.is === BERRY) {
+        // eat the berry
+        Island.putSoundAt(iz, Sound.Chomp(iz, scrog.id).id, here);
+        Island.removeThing(iz, thingHere.id);
+        return;
+      }
+
+    } else {
+      const thingAhead = Island.getThingAt(iz, ahead);
+      const scrogAhead = Island.getScrogAt(iz, ahead);
+
+      if (thingAhead && thingAhead.is === BERRY) {
+        // eat the berry
+        Island.putSoundAt(iz, Sound.Chomp(iz, scrog.id).id, here);
+        Island.removeThing(iz, thingAhead.id);
+        return;
+      }
+
+      if (!thingAhead && scrogAhead) {
+        // eat the scrog
+        Island.putSoundAt(iz, Sound.Chomp(iz, scrog.id).id, here);
+        Island.removeScrog(iz, scrogAhead.id);
+        return;
+      }
+    }
+
+    // no food
+    Island.putSoundAt(iz, Sound.Ouch(iz, scrog.id).id, here);
+  }
 }
 
 function _in(iz: Island, [row, col]: Where) {

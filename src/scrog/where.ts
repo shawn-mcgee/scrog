@@ -106,7 +106,7 @@ export const Where = {
     }
   },
 
-  then(where: Where, facing: Where.Absolute, toward: Where.Absolute | Where.Relative) {
+  to(where: Where, facing: Where.Absolute, toward: Where.Absolute | Where.Relative) {
     switch (toward) {
       case HERE : return where;
       case LEFT : return Where.leftOf (where, facing);

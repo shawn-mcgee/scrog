@@ -17,6 +17,7 @@ export type OUCH   = typeof OUCH  ;
 export type Sound = {
   readonly id   : string;
   readonly is   : Sound.Is
+  readonly by  ?: string;
            where: Where
 }
 
@@ -25,36 +26,36 @@ export namespace Sound {
 }
 
 export const Sound = {
-  new(id: string, is: Sound.Is, where: Where = Where.new()) {
-    return { id, is, where } satisfies Sound
+  new(id: string, is: Sound.Is, by?: string, where: Where = Where.new()) {
+    return { id, is, by, where } satisfies Sound
   },
 
-  Splash(iz: Island, where: Where = Where.new()) { 
-    const sound = Sound.new(uniqueId(iz.sounds), SPLASH, where);
+  Splash(iz: Island, by?: string, where: Where = Where.new()) { 
+    const sound = Sound.new(uniqueId(iz.sounds), SPLASH, by, where);
     Island.addSound(iz, sound);
     return sound;
   },
 
-  Rustle(iz: Island, where: Where = Where.new()) { 
-    const sound = Sound.new(uniqueId(iz.sounds), RUSTLE, where);
+  Rustle(iz: Island, by ?: string, where: Where = Where.new()) { 
+    const sound = Sound.new(uniqueId(iz.sounds), RUSTLE, by, where);
     Island.addSound(iz, sound);
     return sound;
   },
 
-  Chomp (iz: Island, where: Where = Where.new()) { 
-    const sound = Sound.new(uniqueId(iz.sounds), CHOMP , where);
+  Chomp (iz: Island, by ?: string, where: Where = Where.new()) { 
+    const sound = Sound.new(uniqueId(iz.sounds), CHOMP , by, where);
     Island.addSound(iz, sound);
     return sound;
   },
 
-  Croak (iz: Island, where: Where = Where.new()) { 
-    const sound = Sound.new(uniqueId(iz.sounds), CROAK , where);
+  Croak (iz: Island, by ?: string, where: Where = Where.new()) { 
+    const sound = Sound.new(uniqueId(iz.sounds), CROAK , by, where);
     Island.addSound(iz, sound);
     return sound;
   },
 
-  Ouch  (iz: Island, where: Where = Where.new()) { 
-    const sound = Sound.new(uniqueId(iz.sounds), OUCH  , where);
+  Ouch  (iz: Island, by ?: string, where: Where = Where.new()) { 
+    const sound = Sound.new(uniqueId(iz.sounds), OUCH  , by, where);
     Island.addSound(iz, sound);
     return sound;
   },
